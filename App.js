@@ -1,14 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import HomeScreen from "./screens/HomeScreen";
+import AppNavigator from "./navigator/AppNavigator";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
+import BottomTabNavigation from "./navigator/TabNavigator";
 
 export default function App() {
 	return (
 		<Provider store={store}>
 			<Container>
-				<HomeScreen />
+				<BottomTabNavigation />
 			</Container>
 		</Provider>
 	);

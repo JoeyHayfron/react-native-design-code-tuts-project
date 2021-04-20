@@ -10,14 +10,13 @@ import {
 } from "react-native";
 import React from "react";
 import styled from "styled-components";
-import Card from "../components/Card";
-import { Ionicons } from "@expo/vector-icons";
-import { NotificationIcon } from "../components/Icons";
-import Logo from "../components/Logo";
-import Course from "../components/Course";
-import Menu from "../components/Menu";
+import Card from "../../components/Card";
+import { NotificationIcon } from "../../components/Icons";
+import Logo from "../../components/Logo";
+import Course from "../../components/Course";
+import Menu from "../../components/Menu";
 import { connect } from "react-redux";
-import { openMenu } from "../redux/actions/ui/ui.actions";
+import { openMenu } from "../../redux/actions/ui/ui.actions";
 
 function HomeScreen(props) {
 	const scale = new Animated.Value(1);
@@ -50,9 +49,15 @@ function HomeScreen(props) {
 					<ScrollView>
 						<TitleBar>
 							<TouchableOpacity onPress={() => props.toggleMenu()}>
-								<Avatar source={require("../assets/avatar.jpg")} />
+								<Avatar
+									source={
+										props.user
+											? { uri: props.user.photo }
+											: require("../../assets/avatar-default.jpg")
+									}
+								/>
 								<Title>Welcome back,</Title>
-								<Name>Joseph</Name>
+								<Name>{props.user ? props.user.name : `${Joseph}`}</Name>
 							</TouchableOpacity>
 							<NotificationIcon style={{ position: "absolute", right: 12, top: 5 }} />
 						</TitleBar>
@@ -73,14 +78,19 @@ function HomeScreen(props) {
 						<SubTitle>Continue Learning</SubTitle>
 						<ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
 							{continueLearning.map((item, index) => (
-								<Card
-									title={item.title}
-									image={item.image}
-									caption={item.caption}
-									subtitle={item.subtitle}
-									logo={item.logo}
+								<TouchableOpacity
 									key={index}
-								/>
+									onPress={() => {
+										props.navigation.push("Section");
+									}}>
+									<Card
+										title={item.title}
+										image={item.image}
+										caption={item.caption}
+										subtitle={item.subtitle}
+										logo={item.logo}
+									/>
+								</TouchableOpacity>
 							))}
 						</ScrollView>
 						<SubTitle>Popular Courses</SubTitle>
@@ -106,6 +116,7 @@ function HomeScreen(props) {
 const mapStateToProps = (state) => {
 	return {
 		menuToggled: state.ui.toggleMenu,
+		user: state.user.userInfo,
 	};
 };
 
@@ -169,27 +180,27 @@ const SubTitle = styled.Text`
 
 const logos = [
 	{
-		image: require("../assets/logo-framerx.png"),
+		image: require("../../assets/logo-framerx.png"),
 		text: "Framer X",
 	},
 	{
-		image: require("../assets/logo-figma.png"),
+		image: require("../../assets/logo-figma.png"),
 		text: "Figma",
 	},
 	{
-		image: require("../assets/logo-studio.png"),
+		image: require("../../assets/logo-studio.png"),
 		text: "Studio",
 	},
 	{
-		image: require("../assets/logo-react.png"),
+		image: require("../../assets/logo-react.png"),
 		text: "React",
 	},
 	{
-		image: require("../assets/logo-swift.png"),
+		image: require("../../assets/logo-swift.png"),
 		text: "Swift",
 	},
 	{
-		image: require("../assets/logo-sketch.png"),
+		image: require("../../assets/logo-sketch.png"),
 		text: "Sketch",
 	},
 ];
@@ -197,31 +208,31 @@ const logos = [
 const continueLearning = [
 	{
 		title: "React Native for Designers",
-		image: require("../assets/background11.jpg"),
+		image: require("../../assets/background11.jpg"),
 		caption: "React Native",
 		subtitle: "1 of 12 sections",
-		logo: require("../assets/logo-react.png"),
+		logo: require("../../assets/logo-react.png"),
 	},
 	{
 		title: "Styled COmponents",
-		image: require("../assets/background12.jpg"),
+		image: require("../../assets/background12.jpg"),
 		caption: "React Native",
 		subtitle: "2 of 12 sections",
-		logo: require("../assets/logo-react.png"),
+		logo: require("../../assets/logo-react.png"),
 	},
 	{
 		title: "Props and Icons",
-		image: require("../assets/background13.jpg"),
+		image: require("../../assets/background13.jpg"),
 		caption: "React Native",
 		subtitle: "3 of 12 sections",
-		logo: require("../assets/logo-react.png"),
+		logo: require("../../assets/logo-react.png"),
 	},
 	{
 		title: "Static Data and Loop",
-		image: require("../assets/background14.jpg"),
+		image: require("../../assets/background14.jpg"),
 		caption: "React Native",
 		subtitle: "1 of 12 sections",
-		logo: require("../assets/logo-react.png"),
+		logo: require("../../assets/logo-react.png"),
 	},
 ];
 
@@ -229,37 +240,37 @@ const popularCourses = [
 	{
 		primaryText: "Prototype in InVision Studio",
 		secondaryText: "10 sections",
-		logo: require("../assets/logo-studio.png"),
-		image: require("../assets/background13.jpg"),
+		logo: require("../../assets/logo-studio.png"),
+		image: require("../../assets/background13.jpg"),
 		author: "Meng To",
 		caption: "Design and Interactive Prototype",
-		profile: require("../assets/avatar.jpg"),
+		profile: require("../../assets/avatar.jpg"),
 	},
 	{
 		primaryText: "React for Designers",
 		secondaryText: "12 sections",
-		logo: require("../assets/logo-react.png"),
-		image: require("../assets/background11.jpg"),
+		logo: require("../../assets/logo-react.png"),
+		image: require("../../assets/background11.jpg"),
 		author: "Meng To",
 		caption: "Learn to Design and code a React site",
-		profile: require("../assets/avatar.jpg"),
+		profile: require("../../assets/avatar.jpg"),
 	},
 	{
 		primaryText: "Design and Code in Framer X",
 		secondaryText: "10 sections",
-		logo: require("../assets/logo-framerx.png"),
-		image: require("../assets/background14.jpg"),
+		logo: require("../../assets/logo-framerx.png"),
+		image: require("../../assets/background14.jpg"),
 		author: "Meng To",
 		caption: "Create powerful designs and code components for your app",
-		profile: require("../assets/avatar.jpg"),
+		profile: require("../../assets/avatar.jpg"),
 	},
 	{
 		primaryText: "Design Systems in Figma",
 		secondaryText: "10 sections",
-		logo: require("../assets/logo-figma.png"),
-		image: require("../assets/background6.jpg"),
+		logo: require("../../assets/logo-figma.png"),
+		image: require("../../assets/background6.jpg"),
 		author: "Meng To",
 		caption: "Complete guide to designing a site using a collaborative design tool",
-		profile: require("../assets/avatar.jpg"),
+		profile: require("../../assets/avatar.jpg"),
 	},
 ];
