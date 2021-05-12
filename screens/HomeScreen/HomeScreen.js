@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 	Animated,
 	StatusBar,
+	Platform,
 } from "react-native";
 import React from "react";
 import styled from "styled-components";
@@ -17,10 +18,51 @@ import Course from "../../components/Course";
 import Menu from "../../components/Menu";
 import { connect } from "react-redux";
 import { openMenu } from "../../redux/actions/ui/ui.actions";
+import { gql, useQuery } from "@apollo/client";
+
+const CardsQuery = gql`
+	{
+		cardCollection {
+			items {
+				title
+				subtitle
+				caption
+				image {
+					title
+					description
+					contentType
+					fileName
+					size
+					url
+					width
+					height
+				}
+				logo {
+					title
+					description
+					contentType
+					fileName
+					size
+					url
+					width
+					height
+				}
+				content
+			}
+		}
+	}
+`;
 
 function HomeScreen(props) {
 	const scale = new Animated.Value(1);
 	const opacity = new Animated.Value(1);
+	const { loading, error, data } = useQuery(CardsQuery);
+
+	useEffect(() => {
+		StatusBar.setTranslucent(true);
+		StatusBar.setBackgroundColor("transparent");
+		StatusBar.setBarStyle("dark-content", true);
+	}, []);
 
 	useEffect(() => {
 		showMenu();
@@ -46,18 +88,18 @@ function HomeScreen(props) {
 					style={{
 						paddingTop: Platform.OS === "ios" ? 0 : Constants.statusBarHeight,
 					}}>
-					<ScrollView>
+					<ScrollView showsVerticalScrollIndicator={false}>
 						<TitleBar>
 							<TouchableOpacity onPress={() => props.toggleMenu()}>
 								<Avatar
 									source={
-										props.user
+										props.user != undefined
 											? { uri: props.user.photo }
 											: require("../../assets/avatar-default.jpg")
 									}
 								/>
 								<Title>Welcome back,</Title>
-								<Name>{props.user ? props.user.name : `${Joseph}`}</Name>
+								<Name>{props.user != undefined ? props.user.name : `${Joseph}`}</Name>
 							</TouchableOpacity>
 							<NotificationIcon style={{ position: "absolute", right: 12, top: 5 }} />
 						</TitleBar>
@@ -77,35 +119,54 @@ function HomeScreen(props) {
 						</ScrollView>
 						<SubTitle>Continue Learning</SubTitle>
 						<ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-							{continueLearning.map((item, index) => (
-								<TouchableOpacity
-									key={index}
-									onPress={() => {
-										props.navigation.push("Section");
-									}}>
-									<Card
-										title={item.title}
-										image={item.image}
-										caption={item.caption}
-										subtitle={item.subtitle}
-										logo={item.logo}
-									/>
-								</TouchableOpacity>
-							))}
+							{loading ? (
+								<Message>Loading....</Message>
+							) : error ? (
+								<Message>Error occured</Message>
+							) : data.cardCollection.items ? (
+								<CardsContainer>
+									{data.cardCollection.items
+										.map((card, index) => {
+											console.log(card);
+											return (
+												<TouchableOpacity
+													key={index}
+													onPress={() => {
+														props.navigation.push("Section", {
+															section: card,
+														});
+													}}>
+													<Card
+														title={card.title}
+														image={card.image.url}
+														caption={card.caption}
+														subtitle={card.subtitle}
+														logo={card.logo.url}
+													/>
+												</TouchableOpacity>
+											);
+										})
+										.reverse()}
+								</CardsContainer>
+							) : (
+								""
+							)}
 						</ScrollView>
 						<SubTitle>Popular Courses</SubTitle>
-						{popularCourses.map((item, index) => (
-							<Course
-								primaryText={item.primaryText}
-								secondaryText={item.secondaryText}
-								author={item.author}
-								logo={item.logo}
-								image={item.image}
-								caption={item.caption}
-								profile={item.profile}
-								key={index}
-							/>
-						))}
+						<CoursesContainer>
+							{popularCourses.map((item, index) => (
+								<Course
+									primaryText={item.primaryText}
+									secondaryText={item.secondaryText}
+									author={item.author}
+									logo={item.logo}
+									image={item.image}
+									caption={item.caption}
+									profile={item.profile}
+									key={index}
+								/>
+							))}
+						</CoursesContainer>
 					</ScrollView>
 				</SafeAreaView>
 			</AnimatedContainer>
@@ -138,6 +199,18 @@ const Container = styled.View`
 	border-top-left-radius: 10px;
 	border-top-right-radius: 10px;
 `;
+
+const Message = styled.Text``;
+const CardsContainer = styled.View`
+	flex-direction: row;
+	padding-left: 10px;
+`;
+
+const CoursesContainer = styled.View`
+	flex-direction: row;
+	flex-wrap: wrap;
+	padding-left: 10px;
+` ;
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 
@@ -202,37 +275,6 @@ const logos = [
 	{
 		image: require("../../assets/logo-sketch.png"),
 		text: "Sketch",
-	},
-];
-
-const continueLearning = [
-	{
-		title: "React Native for Designers",
-		image: require("../../assets/background11.jpg"),
-		caption: "React Native",
-		subtitle: "1 of 12 sections",
-		logo: require("../../assets/logo-react.png"),
-	},
-	{
-		title: "Styled COmponents",
-		image: require("../../assets/background12.jpg"),
-		caption: "React Native",
-		subtitle: "2 of 12 sections",
-		logo: require("../../assets/logo-react.png"),
-	},
-	{
-		title: "Props and Icons",
-		image: require("../../assets/background13.jpg"),
-		caption: "React Native",
-		subtitle: "3 of 12 sections",
-		logo: require("../../assets/logo-react.png"),
-	},
-	{
-		title: "Static Data and Loop",
-		image: require("../../assets/background14.jpg"),
-		caption: "React Native",
-		subtitle: "1 of 12 sections",
-		logo: require("../../assets/logo-react.png"),
 	},
 ];
 

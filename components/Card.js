@@ -5,14 +5,14 @@ export default function Card(props) {
 	return (
 		<Container>
 			<Cover>
-				<Image source={props.image} />
+				<Image source={{ uri: props.image }} />
 				<Title>{props.title}</Title>
 			</Cover>
 			<Content>
-				<Logo source={props.logo} />
+				<Logo source={{ uri: props.logo }} />
 				<Wrapper>
-					<Caption>{props.caption}</Caption>
-					<SubTitle>{props.subtitle}</SubTitle>
+					<Caption>{props.subtitle}</Caption>
+					<SubTitle>{props.caption}</SubTitle>
 				</Wrapper>
 			</Content>
 		</Container>
@@ -52,12 +52,10 @@ const Container = styled.View`
 	background: white;
 	width: 315px;
 	height: 280px;
-	margin-top: 20px;
-	margin-left: 20px;
 	border-radius: 14px;
-	box-shadow: 0 50px 15px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 10px 5px rgba(0, 0, 0, 0.15);
 	elevation: 3.5;
-	margin-bottom: 30px;
+	margin: 20px 10px;
 `;
 const Cover = styled.View`
 	width: 100%;

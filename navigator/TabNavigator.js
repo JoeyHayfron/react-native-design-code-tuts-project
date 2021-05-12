@@ -31,7 +31,11 @@ const CoursesStackScreens = () => {
 const ProjectsStackScreens = () => {
 	return (
 		<ProjectsStack.Navigator>
-			<ProjectsStack.Screen name='Projects' component={ProjectsScreen} />
+			<ProjectsStack.Screen
+				name='Projects'
+				component={ProjectsScreen}
+				options={{ headerShown: false }}
+			/>
 		</ProjectsStack.Navigator>
 	);
 };
@@ -57,9 +61,9 @@ const BottomTabNavigation = () => {
 				activeTintColor: "#4775f2",
 				inactiveTintColor: "#b8bece",
 			}}>
+			<BottomTabNavigator.Screen name='Projects' component={ProjectsStackScreens} />
 			<BottomTabNavigator.Screen name='Home' component={HomeStackScreens} />
 			<BottomTabNavigator.Screen name='Courses' component={CoursesStackScreens} />
-			<BottomTabNavigator.Screen name='Projects' component={ProjectsStackScreens} />
 		</BottomTabNavigator.Navigator>
 	);
 };
@@ -75,7 +79,11 @@ const NewBottomNav = () => {
 					component={BottomTabNavigation}
 					options={{ headerShown: false }}
 				/>
-				<BottomStack.Screen name='Section' component={SectionScreen} />
+				<BottomStack.Screen
+					name='Section'
+					component={SectionScreen}
+					options={{ headerShown: false }}
+				/>
 			</BottomStack.Navigator>
 		</NavigationContainer>
 	);

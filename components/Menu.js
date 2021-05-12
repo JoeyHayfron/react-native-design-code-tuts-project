@@ -6,6 +6,11 @@ import MenuItem from "./MenuItem";
 import { connect } from "react-redux";
 import { closeMenu } from "../redux/actions/ui/ui.actions";
 
+const screenWidth = Dimensions.get("window").width;
+var cardWidth = screenWidth;
+if (screenWidth > 500) {
+	cardWidth = 500;
+}
 const screenHeight = Dimensions.get("window").height;
 
 function Menu(props) {
@@ -99,7 +104,8 @@ const CloseView = styled.View`
 
 const Container = styled.View`
 	height: 100%;
-	width: 100%;
+	width: ${cardWidth};
+	align-self: center;
 	position: absolute;
 	background: white;
 	z-index: 100;
