@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Project from "../components/Project";
 import { PanResponder, Animated } from "react-native";
+import { connect } from "react-redux";
 
 const ProjectsScreen = (props) => {
 	const [scale, setScale] = useState(new Animated.Value(0.9));
@@ -10,6 +11,10 @@ const ProjectsScreen = (props) => {
 	const [thirdTranslate, setThirdTranslate] = useState(new Animated.Value(-50));
 	const [index, setIndex] = useState(0);
 	const pan = useRef(new Animated.ValueXY()).current;
+
+	useEffect(() => {
+		console.log("LLO", props.cardOpened);
+	}, [props.cardOpened]);
 
 	const getNextIndex = (index) => {
 		var nextIndex = index + 1;
@@ -27,7 +32,15 @@ const ProjectsScreen = (props) => {
 				Animated.spring(thirdScale, { toValue: 0.9 }).start();
 				Animated.spring(thirdTranslate, { toValue: 44 }).start();
 			},
-			onMoveShouldSetPanResponder: () => true,
+			onMoveShouldSetPanResponder: (event, gestureState) => {
+				if (gestureState.dx === 0 && gestureState.dy === 0) return false;
+				else {
+					// console.log("OP", props.cardOpened);
+					if (props.cardOpened) {
+						return false;
+					} else return true;
+				}
+			},
 			onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
 			onPanResponderRelease: () => {
 				const positionY = pan.y._value;
@@ -67,6 +80,7 @@ const ProjectsScreen = (props) => {
 					author={projects[index].author}
 					image={projects[index].image}
 					text={projects[index].text}
+					canOpen
 				/>
 			</Animated.View>
 			<Animated.View
@@ -110,8 +124,12 @@ const ProjectsScreen = (props) => {
 		</Container>
 	);
 };
-
-export default ProjectsScreen;
+const mapStateToProps = (state) => {
+	return {
+		cardOpened: state.ui.cardOpened,
+	};
+};
+export default connect(mapStateToProps)(ProjectsScreen);
 
 const Container = styled.View`
 	flex: 1;
@@ -127,21 +145,18 @@ const projects = [
 		title: "Price Tag",
 		image: require("../assets/background5.jpg"),
 		author: "Joeyy",
-		text:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar.",
+		text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar.",
 	},
 	{
 		title: "Nikiljay",
 		image: require("../assets/background7.jpg"),
 		author: "Hayfron",
-		text:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar.",
+		text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar.",
 	},
 	{
 		title: "The DM App - Ananoumous Chat",
 		image: require("../assets/background6.jpg"),
 		author: "Jay",
-		text:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar.",
+		text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar.",
 	},
 ];

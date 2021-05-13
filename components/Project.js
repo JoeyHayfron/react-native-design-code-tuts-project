@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Animated, Dimensions, TouchableWithoutFeedback } from "react-native";
+import {
+	Animated,
+	Dimensions,
+	TouchableWithoutFeedback,
+	View,
+	TouchableOpacity,
+	StatusBar,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { connect } from "react-redux";
+import { openCard, closeCard } from "../redux/actions/ui/ui.actions";
 
-export default function Project(props) {
+const Project = (props) => {
 	const screenHeight = Dimensions.get("window").height;
 	const screenWidth = Dimensions.get("window").width;
 
@@ -13,9 +22,25 @@ export default function Project(props) {
 	const [closeButtonOpacity, setCloseButtonOpacity] = useState(new Animated.Value(0));
 
 	const openCard = () => {
-		console.log("HHH", screenHeight);
+		if (!props.canOpen) return;
+
 		Animated.spring(cardHeight, { toValue: screenHeight }).start();
 		Animated.spring(cardWidth, { toValue: screenWidth }).start();
+		Animated.spring(titleTop, { toValue: 40 }).start();
+		Animated.spring(closeButtonOpacity, { toValue: 1 }).start();
+
+		StatusBar.setHidden(true);
+		props.openeCard();
+	};
+
+	const closeCard = () => {
+		Animated.spring(cardHeight, { toValue: 460 }).start();
+		Animated.spring(cardWidth, { toValue: 315 }).start();
+		Animated.spring(titleTop, { toValue: 20 }).start();
+		Animated.spring(closeButtonOpacity, { toValue: 0 }).start();
+
+		StatusBar.setHidden(false);
+		props.closeeCard();
 	};
 
 	return (
@@ -23,14 +48,37 @@ export default function Project(props) {
 			<AnimatedContainer style={{ width: cardWidth, height: cardHeight }}>
 				<Cover>
 					<Image source={props.image} />
-					<AnimatedTitle>{props.title}</AnimatedTitle>
+					<AnimatedTitle style={{ top: titleTop }}>{props.title}</AnimatedTitle>
 					<Author>by {props.author}</Author>
 				</Cover>
 				<Text>{props.text}</Text>
+				<TouchableOpacity
+					style={{ position: "absolute", top: 40, right: 20 }}
+					onPress={() => {
+						closeCard();
+					}}>
+					<AnimatedCloseView style={{ opacity: closeButtonOpacity }}>
+						<Ionicons name='ios-close' size={32} color='#546bfb' />
+					</AnimatedCloseView>
+				</TouchableOpacity>
 			</AnimatedContainer>
 		</TouchableWithoutFeedback>
 	);
-}
+};
+
+const mapStateToProps = (state) => {
+	return {
+		cardOpened: state.ui.cardOpened,
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		openeCard: () => dispatch(openCard()),
+		closeeCard: () => dispatch(closeCard()),
+	};
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Project);
 
 const Container = styled.View`
 	width: 315px;
@@ -49,6 +97,17 @@ const Cover = styled.View`
 	border-top-left-radius: 14px;
 	overflow: hidden;
 `;
+
+const CloseView = styled.View`
+	height: 32px;
+	width: 32px;
+	border-radius: 16px;
+	background-color: white;
+	justify-content: center;
+	align-items: center;
+`;
+
+const AnimatedCloseView = Animated.createAnimatedComponent(CloseView);
 
 const Image = styled.Image`
 	width: 100%;
