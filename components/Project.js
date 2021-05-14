@@ -4,10 +4,10 @@ import {
 	Animated,
 	Dimensions,
 	TouchableWithoutFeedback,
-	View,
 	TouchableOpacity,
 	StatusBar,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { openCard, closeCard } from "../redux/actions/ui/ui.actions";
@@ -20,6 +20,7 @@ const Project = (props) => {
 	const [cardWidth, setCardWidth] = useState(new Animated.Value(315));
 	const [titleTop, setTitleTop] = useState(new Animated.Value(20));
 	const [closeButtonOpacity, setCloseButtonOpacity] = useState(new Animated.Value(0));
+	const [textHeight, setTextHeight] = useState(new Animated.Value(100));
 
 	const openCard = () => {
 		if (!props.canOpen) return;
@@ -28,9 +29,10 @@ const Project = (props) => {
 		Animated.spring(cardWidth, { toValue: screenWidth }).start();
 		Animated.spring(titleTop, { toValue: 40 }).start();
 		Animated.spring(closeButtonOpacity, { toValue: 1 }).start();
+		Animated.spring(textHeight, { toValue: 1000 }).start();
 
 		StatusBar.setHidden(true);
-		props.openeCard();
+		props.openCard();
 	};
 
 	const closeCard = () => {
@@ -38,9 +40,10 @@ const Project = (props) => {
 		Animated.spring(cardWidth, { toValue: 315 }).start();
 		Animated.spring(titleTop, { toValue: 20 }).start();
 		Animated.spring(closeButtonOpacity, { toValue: 0 }).start();
+		Animated.spring(textHeight, { toValue: 100 }).start();
 
 		StatusBar.setHidden(false);
-		props.closeeCard();
+		props.closeCard();
 	};
 
 	return (
@@ -51,7 +54,16 @@ const Project = (props) => {
 					<AnimatedTitle style={{ top: titleTop }}>{props.title}</AnimatedTitle>
 					<Author>by {props.author}</Author>
 				</Cover>
-				<Text>{props.text}</Text>
+				<AnimatedText style={{ height: textHeight }}>{props.text}</AnimatedText>
+				<AnimatedLinearGradient
+					colors={["rgba(255,255,255,0)", "rgba(255,255,255,1)"]}
+					style={{
+						position: "absolute",
+						top: 330,
+						width: "100%",
+						height: textHeight,
+					}}
+				/>
 				<TouchableOpacity
 					style={{ position: "absolute", top: 40, right: 20 }}
 					onPress={() => {
@@ -74,10 +86,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		openeCard: () => dispatch(openCard()),
-		closeeCard: () => dispatch(closeCard()),
+		openCard: () => dispatch(openCard()),
+		closeCard: () => dispatch(closeCard()),
 	};
 };
+
 export default connect(mapStateToProps, mapDispatchToProps)(Project);
 
 const Container = styled.View`
@@ -90,6 +103,8 @@ const Container = styled.View`
 `;
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
+
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Cover = styled.View`
 	height: 290px;
@@ -140,3 +155,5 @@ const Text = styled.Text`
 	font-size: 17px;
 	text-align: justify;
 `;
+
+const AnimatedText = Animated.createAnimatedComponent(Text);

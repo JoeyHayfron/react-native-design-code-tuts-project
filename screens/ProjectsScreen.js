@@ -9,12 +9,9 @@ const ProjectsScreen = (props) => {
 	const [translateY, setTranslateY] = useState(new Animated.Value(44));
 	const [thirdScale, setThirdScale] = useState(new Animated.Value(0.8));
 	const [thirdTranslate, setThirdTranslate] = useState(new Animated.Value(-50));
+	const [maskOpacity, setMaskOpacity] = useState(new Animated.Value(0));
 	const [index, setIndex] = useState(0);
 	const pan = useRef(new Animated.ValueXY()).current;
-
-	useEffect(() => {
-		console.log("LLO", props.cardOpened);
-	}, [props.cardOpened]);
 
 	const getNextIndex = (index) => {
 		var nextIndex = index + 1;
@@ -31,11 +28,17 @@ const ProjectsScreen = (props) => {
 
 				Animated.spring(thirdScale, { toValue: 0.9 }).start();
 				Animated.spring(thirdTranslate, { toValue: 44 }).start();
+				Animated.timing(maskOpacity, { toValue: 1 }).start();
 			},
 			onMoveShouldSetPanResponder: (event, gestureState) => {
-				if (gestureState.dx === 0 && gestureState.dy === 0) return false;
+				if (
+					gestureState.dx >= -1.5 &&
+					gestureState.dx <= 1.5 &&
+					gestureState.dy >= -1.5 &&
+					gestureState.dy <= 1.5
+				)
+					return false;
 				else {
-					// console.log("OP", props.cardOpened);
 					if (props.cardOpened) {
 						return false;
 					} else return true;
@@ -44,6 +47,8 @@ const ProjectsScreen = (props) => {
 			onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
 			onPanResponderRelease: () => {
 				const positionY = pan.y._value;
+				Animated.timing(maskOpacity, { toValue: 0 }).start();
+
 				if (positionY > 200) {
 					Animated.timing(pan, { toValue: { x: 0, y: 1000 } }).start(() => {
 						pan.setValue({ x: 0, y: 0 });
@@ -70,6 +75,7 @@ const ProjectsScreen = (props) => {
 
 	return (
 		<Container>
+			<AnimatedMask style={{ opacity: maskOpacity }} />
 			<Animated.View
 				style={{
 					transform: [{ translateX: pan.x }, { translateY: pan.y }],
@@ -136,6 +142,18 @@ const Container = styled.View`
 	align-items: center;
 	justify-content: center;
 `;
+
+const Mask = styled.View`
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	z-index: -3;
+	background-color: rgba(0, 0, 0, 0.25);
+`;
+
+const AnimatedMask = Animated.createAnimatedComponent(Mask);
+
 const Text = styled.Text`
 	color: black;
 `;
@@ -145,7 +163,7 @@ const projects = [
 		title: "Price Tag",
 		image: require("../assets/background5.jpg"),
 		author: "Joeyy",
-		text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar.",
+		text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo lacus, accumsan eu leo non, ultricies feugiat nisi. Duis feugiat est metus, consectetur malesuada eros iaculis sed. Maecenas convallis purus id nisl volutpat pulvinar.",
 	},
 	{
 		title: "Nikiljay",
